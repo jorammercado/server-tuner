@@ -6,7 +6,36 @@ const { checkSongs, checkBoolean, checkName, checkArtist, checkTime, checkIndex 
 // index
 songs.get("/", checkSongs, async (req, res) => {
     const allSongs = await getAllSongs()
-    res.status(200).json(allSongs)
+    if(req.query.order){
+        allSongs.sort((a,b) => {
+            if(a.name.toLowerCase() < b.name.toLowerCase())
+                return -1
+            else if (a.name.toLowerCase() > b.name.toLowerCase())
+                return 1
+            else
+                return 0
+        })
+        if(req.query.order==="asc")
+            res.json(allSongs)
+        else if(req.query.order==="desc")
+            res.json(allSongs.reverse())    
+        else
+            res.redirect('/order should be asc or desc')
+    }
+    else if(req.query.is_favorite){
+        if(req.query.is_favorite==="true")
+            res.json(allSongs.filter(current => { 
+                return current.is_favorite === true
+            }))
+        else if(req.query.is_favorite==="false")
+            res.json(allSongs.filter(current => { 
+                return current.is_favorite === false
+            }))
+        else
+            res.redirect('/is_favorite should be true or false')
+    }
+    else
+        res.status(200).json(allSongs)
 })
 
 // show
@@ -33,6 +62,7 @@ songs.delete("/:id", checkIndex, async (req, res) => {
 songs.put("/:id", checkName, checkArtist, checkTime, checkBoolean, checkIndex, async (req, res) => {
     const { id } = req.params
     const updatedSong = await updateSong(id, req.body)
+    //console.log(updatedSong)
     res.status(200).json(updatedSong)
 })
 
