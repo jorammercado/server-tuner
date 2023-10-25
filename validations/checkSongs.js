@@ -1,5 +1,15 @@
 const { getAllSongs } = require("../queries/songs")
 
+const checkSongs = async (req, res, next) => {
+    const allSongs = await getAllSongs()
+    if(allSongs[0]){
+        return next()
+    }
+    else{
+        res.status(500).json({error: "server error"})
+    }
+}
+
 const checkName = (req, res, next) => {
     if(req.body.name){
         //console.log("checking name...")
@@ -30,7 +40,7 @@ const checkTime = (req, res, next) => {
                 res.status(400).json({error: "time requires 2 numbers separated by colon"})
             else{
                 if(/^[0-9]+$/.test(timeArr[0])&&/^[0-9]+$/.test(timeArr[1]))
-                    next()
+                    return next()
                 else
                 res.status(400).json({error: "values separated by colon not numbers"})
             }
@@ -44,7 +54,7 @@ const checkBoolean = (req, res, next) => {
         is_favorite == "false"   || 
         is_favorite == undefined || 
         typeof is_favorite == "boolean" ) 
-            next()
+            return next()
     else
         res.status(400).json({error: "is_favorite must be a boolean value"})
 }
@@ -54,10 +64,10 @@ const checkIndex = async (req, res, next) =>{
     const {id} = req.params
     const ids = allSongs.map(e => e.id)
     if(ids.includes(Number(id)))
-        next()
+        return next()
     else
-        res.redirect("/error - invalid song id")
+    res.status(404).redirect("/error - invalid song id")
 }
 
-module.exports = { checkBoolean, checkName, checkArtist, checkTime, checkIndex }
+module.exports = { checkBoolean, checkName, checkArtist, checkTime, checkIndex, checkSongs }
 
