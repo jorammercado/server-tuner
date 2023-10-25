@@ -43,4 +43,13 @@ const createSong = async (song) => {
     }
 }
 
-module.exports = { getAllSongs, createSong, getSong }
+const deleteSong = async (id) => {
+    try{
+
+    }
+    catch(error){
+        return error
+    }
+}
+
+module.exports = { getAllSongs, createSong, getSong, deleteSong }

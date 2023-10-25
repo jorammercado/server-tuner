@@ -1,3 +1,4 @@
+const { getAllSongs } = require("../queries/songs")
 
 const checkName = (req, res, next) => {
     if(req.body.name){
@@ -48,5 +49,15 @@ const checkBoolean = (req, res, next) => {
         res.status(400).json({error: "is_favorite must be a boolean value"})
 }
 
-module.exports = { checkBoolean, checkName, checkArtist, checkTime }
+const checkIndex = async (req, res, next) =>{
+    const allSongs = await getAllSongs()
+    const {id} = req.params
+    const ids = allSongs.map(e => e.id)
+    if(ids.includes(Number(id)))
+        next()
+    else
+        res.redirect("/error - invalid song id")
+}
+
+module.exports = { checkBoolean, checkName, checkArtist, checkTime, checkIndex }
 
