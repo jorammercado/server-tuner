@@ -29,7 +29,7 @@ const checkArtist = (req, res, next) => {
 
 const checkTime = (req, res, next) => {
     const { time } = req.body
-    if(time===undefined)
+    if(time===undefined||time==="")
         return next()
     else{
         if(/:/.test(time)===false)
