@@ -8,16 +8,34 @@ songs.get("/", checkSongs, async (req, res) => {
     const allSongs = await getAllSongs()
     if(req.query.order){
         allSongs.sort((a,b) => {
-            if(a.name.toLowerCase() < b.name.toLowerCase())
-                return -1
-            else if (a.name.toLowerCase() > b.name.toLowerCase())
-                return 1
-            else
-                return 0
+            if(req.query.order==="asc"||req.query.order==="desc"){
+                if(a.name.toLowerCase() < b.name.toLowerCase())
+                    return -1
+                else if (a.name.toLowerCase() > b.name.toLowerCase())
+                    return 1
+                else
+                    return 0
+            }
+            else if(req.query.order==="ascArt"||req.query.order==="descArt"){
+                if(a.artist.toLowerCase() < b.artist.toLowerCase())
+                    return -1
+                else if (a.artist.toLowerCase() > b.artist.toLowerCase())
+                    return 1
+                else
+                    return 0
+            }
+            else if(req.query.order==="ascAl"||req.query.order==="descAl"){
+                if(a.album.toLowerCase() < b.album.toLowerCase())
+                    return -1
+                else if (a.album.toLowerCase() > b.album.toLowerCase())
+                    return 1
+                else
+                    return 0
+            }
         })
-        if(req.query.order==="asc")
+        if(req.query.order==="asc"||req.query.order==="ascArt"||req.query.order==="ascAl")
             res.json(allSongs)
-        else if(req.query.order==="desc")
+        else if(req.query.order==="desc"||req.query.order==="descArt"||req.query.order==="descAl")
             res.json(allSongs.reverse())    
         else
             res.redirect('/order should be asc or desc')
