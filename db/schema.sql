@@ -9,5 +9,7 @@ CREATE TABLE songs (
     artist TEXT NOT NULL,
     album TEXT,
     time TEXT,
-    is_favorite BOOLEAN
+    is_favorite BOOLEAN,
+    album_img TEXT,
+    artist_img TEXT
 )
