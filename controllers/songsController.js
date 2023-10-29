@@ -32,10 +32,22 @@ songs.get("/", checkSongs, async (req, res) => {
                 else
                     return 0
             }
+            else if(req.query.order==="ascTime"||req.query.order==="descTime"){
+                const timeAString = a.time.split(":")
+                const timeBString = b.time.split(":")
+                const aTime = Number(timeAString[0])*60+Number(timeAString[1]) 
+                const bTime = Number(timeBString[0])*60+Number(timeBString[1])
+                if(aTime < bTime)
+                    return -1
+                else if (aTime > bTime)
+                    return 1
+                else
+                    return 0
+            }
         })
-        if(req.query.order==="asc"||req.query.order==="ascArt"||req.query.order==="ascAl")
+        if(req.query.order==="asc"||req.query.order==="ascArt"||req.query.order==="ascAl"||req.query.order==="ascTime")
             res.json(allSongs)
-        else if(req.query.order==="desc"||req.query.order==="descArt"||req.query.order==="descAl")
+        else if(req.query.order==="desc"||req.query.order==="descArt"||req.query.order==="descAl"||req.query.order==="descTime")
             res.json(allSongs.reverse())    
         else
             res.redirect('/order should be asc or desc')
