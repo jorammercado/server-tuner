@@ -1,13 +1,34 @@
-const { getAllSongs } = require("../queries/songs")
+const { getAllArtistSongs } = require("../queries/artistSongs")
+const { getAllArtists } = require("../queries/artists")
 
-const checkSongs = async (req, res, next) => {
-    const allSongs = await getAllSongs()
-    if(allSongs[0]){
+const checkArtistSongs = async (req, res, next) => {
+    const allArtistSongs = await getAllArtistSongs()
+    if(allArtistSongs[0]){
         return next()
     }
     else{
-        res.status(500).json({error: "server error - getAllSongs"})
+        res.status(500).json({error: "server error - getAllArtistSongs"})
     }
+}
+
+const checkArtistIndex = async (req, res, next) =>{
+    const allArtist = await getAllArtists()
+    const {artist_id} = req.params
+    const artistIds = allArtist.map(e => e.id)
+    if(artistIds.includes(Number(artist_id)))
+        return next()
+    else
+    res.status(404).redirect("/error - invalid artist id")
+}
+
+const checkSongIndex = async (req, res, next) =>{
+    const allArtistSongs = await getAllArtistSongs()
+    const {id} = req.params
+    const ids = allArtistSongs.map(e => e.id)
+    if(ids.includes(Number(id)))
+        return next()
+    else
+    res.status(404).redirect("/error - invalid song id of artist")
 }
 
 const checkName = (req, res, next) => {
@@ -58,15 +79,10 @@ const checkBoolean = (req, res, next) => {
         res.status(400).json({error: "is_favorite must be a boolean value"})
 }
 
-const checkIndex = async (req, res, next) =>{
-    const allSongs = await getAllSongs()
-    const {id} = req.params
-    const ids = allSongs.map(e => e.id)
-    if(ids.includes(Number(id)))
-        return next()
-    else
-    res.status(404).redirect("/error - invalid song id")
-}
-
-module.exports = { checkBoolean, checkName, checkArtist, checkTime, checkIndex, checkSongs }
-
+module.exports = { checkBoolean,
+                   checkName,
+                   checkArtist,
+                   checkTime,
+                   checkSongIndex,
+                   checkArtistIndex,
+                   checkArtistSongs }

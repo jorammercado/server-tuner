@@ -10,6 +10,8 @@ app.get("/", (req, res) => {
   res.send("Welcome to Tuner")
 })
 
+const artistsController = require("./controllers/artistsController.js")
+app.use("/artists", artistsController)
 const songsController = require("./controllers/songsController.js")
 app.use("/songs", songsController)
 

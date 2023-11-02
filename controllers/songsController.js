@@ -1,7 +1,16 @@
 const express = require("express")
 const songs = express.Router()
-const { getAllSongs, getSong, createSong, deleteSong, updateSong } = require("../queries/songs")
-const { checkSongs, checkBoolean, checkName, checkArtist, checkTime, checkIndex } = require("../validations/checkSongs.js")
+const { getAllSongs, 
+        getSong, 
+        createSong, 
+        deleteSong, 
+        updateSong } = require("../queries/songs")
+const { checkSongs, 
+        checkBoolean, 
+        checkName, 
+        checkArtist, 
+        checkTime, 
+        checkIndex } = require("../validations/checkSongs.js")
 
 // index
 songs.get("/", checkSongs, async (req, res) => {
@@ -92,7 +101,6 @@ songs.delete("/:id", checkIndex, async (req, res) => {
 songs.put("/:id", checkName, checkArtist, checkTime, checkBoolean, checkIndex, async (req, res) => {
     const { id } = req.params
     const updatedSong = await updateSong(id, req.body)
-    //console.log(updatedSong)
     res.status(200).json(updatedSong)
 })
 
