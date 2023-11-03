@@ -20,7 +20,7 @@ const { checkArtistSongs,
 artistSongs.get("/", checkArtistSongs, checkArtistIndex, async (req, res) => {
     const { artist_id } = req.params
     const artist = await getArtist(artist_id)
-    const allArtistSongs = await getAllArtistSongs(artist_id)
+    let allArtistSongs = await getAllArtistSongs(artist_id)
     if (req.query.order) {
         allArtistSongs.sort((a, b) => {
             if (req.query.order === "asc" || req.query.order === "desc") {
@@ -61,21 +61,27 @@ artistSongs.get("/", checkArtistSongs, checkArtistIndex, async (req, res) => {
             }
         })
         if (req.query.order === "asc" || req.query.order === "ascArt" || req.query.order === "ascAl" || req.query.order === "ascTime")
-            res.json(allArtistSongs)
-        else if (req.query.order === "desc" || req.query.order === "descArt" || req.query.order === "descAl" || req.query.order === "descTime")
-            res.json(allArtistSongs.reverse())
+            res.json({ ...artist, allArtistSongs })
+        else if (req.query.order === "desc" || req.query.order === "descArt" || req.query.order === "descAl" || req.query.order === "descTime") {
+            allArtistSongs = allArtistSongs.reverse()
+            res.json({ ...artist, allArtistSongs })
+        }
         else
             res.redirect('/order should be asc or desc')
     }
     else if (req.query.is_favorite) {
-        if (req.query.is_favorite === "true")
-            res.json(allArtistSongs.filter(current => {
+        if (req.query.is_favorite === "true") {
+            allArtistSongs = allArtistSongs.filter(current => {
                 return current.is_favorite === true
-            }))
-        else if (req.query.is_favorite === "false")
-            res.json(allArtistSongs.filter(current => {
+            })
+            res.json({ ...artist, allArtistSongs })
+        }
+        else if (req.query.is_favorite === "false") {
+            allArtistSongs = allArtistSongs.filter(current => {
                 return current.is_favorite === false
-            }))
+            })
+            res.json({ ...artist, allArtistSongs })
+        }
         else
             res.redirect('/is_favorite should be true or false')
     }
@@ -91,15 +97,15 @@ artistSongs.get("/:id", checkArtistIndex, checkSongIndex, async (req, res) => {
 })
 
 // new, /artist/#/songs
-artistSongs.post("/", checkFavBoolean, 
-                      checkSongName, 
-                      checkArtistName, 
-                      checkArtistSongTime,
-                      checkArtistIndex, async (req, res) => {
-    const { artist_id } = req.params
-    const artistSong = await createArtistSong(artist_id, req.body)
-    res.json(artistSong)
-})
+artistSongs.post("/", checkFavBoolean,
+    checkSongName,
+    checkArtistName,
+    checkArtistSongTime,
+    checkArtistIndex, async (req, res) => {
+        const { artist_id } = req.params
+        const artistSong = await createArtistSong(artist_id, req.body)
+        res.json(artistSong)
+    })
 
 // delete /artist/#/songs/#
 artistSongs.delete("/:id", checkSongIndex, checkArtistIndex, async (req, res) => {
@@ -110,14 +116,14 @@ artistSongs.delete("/:id", checkSongIndex, checkArtistIndex, async (req, res) =>
 
 //  update /artist/#/songs/#
 artistSongs.put("/:id", checkSongName,
-                        checkArtistName,
-                        checkArtistSongTime, 
-                        checkFavBoolean,
-                        checkSongIndex,
-                        checkArtistIndex, async (req, res) => {
-    const { id, artist_id } = req.params
-    const updatedArtistSong = await updateArtistSong({artist_id, id, ...req.body})
-    res.status(200).json(updatedArtistSong)
-})
+    checkArtistName,
+    checkArtistSongTime,
+    checkFavBoolean,
+    checkSongIndex,
+    checkArtistIndex, async (req, res) => {
+        const { id, artist_id } = req.params
+        const updatedArtistSong = await updateArtistSong({ artist_id, id, ...req.body })
+        res.status(200).json(updatedArtistSong)
+    })
 
 module.exports = artistSongs
