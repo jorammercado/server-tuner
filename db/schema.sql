@@ -17,7 +17,6 @@ CREATE TABLE songs (
     time TEXT,
     is_favorite BOOLEAN,
     album_img TEXT,
-    artist_img TEXT,
     release_date TEXT,
     artist_id INTEGER REFERENCES artists (id)
     ON DELETE CASCADE
