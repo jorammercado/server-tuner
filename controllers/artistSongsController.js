@@ -1,8 +1,7 @@
 const express = require("express")
 const artistSongs = express.Router({ mergeParams: true })
 const { getArtist } = require("../queries/artists")
-const {
-    getAllArtistSongs,
+const { getAllArtistSongs,
     getOneArtistSong,
     deleteArtistSong,
     createArtistSong,
@@ -11,11 +10,11 @@ const {
 const { checkArtistSongs,
     checkArtistIndex,
     checkSongIndex,
-    checkBoolean,
-    checkName,
-    checkArtist,
-    checkTime,
-    checkIndex } = require("../validations/checkArtistSongs.js")
+    checkFavBoolean,
+    checkSongName,
+    checkArtistName,
+    checkArtistSongTime
+} = require("../validations/checkArtistSongs.js")
 
 // index, /artist/#/songs
 artistSongs.get("/", checkArtistSongs, checkArtistIndex, async (req, res) => {
@@ -81,7 +80,7 @@ artistSongs.get("/", checkArtistSongs, checkArtistIndex, async (req, res) => {
             res.redirect('/is_favorite should be true or false')
     }
     else
-        res.json({ artist, allArtistSongs })
+        res.json({ ...artist, allArtistSongs })
 })
 
 // show, /artist/#/songs/:id
@@ -89,6 +88,36 @@ artistSongs.get("/:id", checkArtistIndex, checkSongIndex, async (req, res) => {
     const { artist_id, id } = req.params
     const artistSong = await getOneArtistSong(id)
     res.json(artistSong)
+})
+
+// new, /artist/#/songs
+artistSongs.post("/", checkFavBoolean, 
+                      checkSongName, 
+                      checkArtistName, 
+                      checkArtistSongTime,
+                      checkArtistIndex, async (req, res) => {
+    const { artist_id } = req.params
+    const artistSong = await createArtistSong(artist_id, req.body)
+    res.json(artistSong)
+})
+
+// delete /artist/#/songs/#
+artistSongs.delete("/:id", checkSongIndex, checkArtistIndex, async (req, res) => {
+    const { id } = req.params
+    const deletedArtistSong = await deleteArtistSong(id)
+    res.status(200).json(deletedArtistSong)
+})
+
+//  update /artist/#/songs/#
+artistSongs.put("/:id", checkSongName,
+                        checkArtistName,
+                        checkArtistSongTime, 
+                        checkFavBoolean,
+                        checkSongIndex,
+                        checkArtistIndex, async (req, res) => {
+    const { id, artist_id } = req.params
+    const updatedArtistSong = await updateArtistSong({artist_id, id, ...req.body})
+    res.status(200).json(updatedArtistSong)
 })
 
 module.exports = artistSongs
