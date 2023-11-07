@@ -4,8 +4,10 @@ require("dotenv").config()
 const cn = {
     host: process.env.PG_HOST,
     port: process.env.PG_PORT,
-    database: process.env.PG_DATABASE,
-    user: process.env.PG_USER
+    database: process.env.EXTERNAL_DATABASE_URL,
+    user: process.env.PG_USER,
+    password: process.env.PGPASSWORD,
+    pass: process.env.PGPASSWORD
 }
 
 const db = pgp(cn)
